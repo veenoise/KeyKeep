@@ -111,6 +111,7 @@ class PasswordManager extends PasswordBasedEncryptionDecryption {
 	protected String strMasterPassword;
 	protected String strPathToPassword = "./.KeyKeepPassword.txt";
 	protected String strPathToCredentials = "./.KeyKeepCredentials.txt";
+	protected String strPathtToEncryptedCredentials = "./.KeyKeepCredentials.txt.cpt";
 	protected boolean boolExitProgram = false;
 
 	void welcome() {
@@ -542,8 +543,7 @@ class PasswordManager extends PasswordBasedEncryptionDecryption {
 	}
 
 	protected void encryptCredentials() {
-		try {
-			// TODO: Encrypt file
+		try {			
 			FileReader fReaderCredentials = new FileReader(this.strPathToCredentials);
 			FileReader fReaderPassword = new FileReader(this.strPathToPassword);
 			Scanner sCredentials = new Scanner(fReaderCredentials);
@@ -568,6 +568,9 @@ class PasswordManager extends PasswordBasedEncryptionDecryption {
 			strContentPassword += "\n" + this.encode(byteArrSalt) + "\n" + this.encode(byteArrIv);
 			FileWriter fWriterCredentials = new FileWriter(this.strPathToCredentials);
 			FileWriter fWriterPassword = new FileWriter(this.strPathToPassword);
+			File fEncryptedCredentials = new File(this.strPathtToEncryptedCredentials);
+			File fCredentials = new File(this.strPathToCredentials);
+			fCredentials.renameTo(fEncryptedCredentials);
 			fWriterCredentials.append(strEncryptedCredentials);
 			fWriterPassword.append(strContentPassword);
 			fReaderCredentials.close();
@@ -617,46 +620,51 @@ public class KeyKeep {
 
 		File passFile = new File(pManager.strPathToPassword);
 		File credentialFile = new File(pManager.strPathToCredentials);
+		File credentialFileEncrypted = new File(pManager.strPathtToEncryptedCredentials);
 
 		// If master account already exists
-		if (passFile.exists() && credentialFile.exists()) {
+		if (passFile.exists()) {
+
 			String strMasterPasswordToAuth = "";
 
 			do {
 				System.out.print("Enter master password: ");
 				strMasterPasswordToAuth = console.nextLine();
 			} while (!pManager.authenticate(strMasterPasswordToAuth));
+			if (credentialFileEncrypted.exists()) {				
+				try {
+					credentialFileEncrypted.renameTo(credentialFile);
+					FileReader fReaderPassword = new FileReader(pManager.strPathToPassword);
+					FileReader fReaderCredentials = new FileReader(pManager.strPathToCredentials);
+					Scanner sPassword = new Scanner(fReaderPassword);
+					Scanner sCredentials = new Scanner(fReaderCredentials);
 
-			// TODO: DECRYPT CREDENTIALS
-			try {
-				FileReader fReaderPassword = new FileReader(pManager.strPathToPassword);
-				FileReader fReaderCredentials = new FileReader(pManager.strPathToCredentials);
-				Scanner sPassword = new Scanner(fReaderPassword);
-				Scanner sCredentials = new Scanner(fReaderCredentials);
+					String strEncryptedCredentials = sCredentials.nextLine();
+					sPassword.nextLine();
+					sPassword.nextLine();
+					byte[] byteArrSalt = pManager.decode(sPassword.nextLine());
+					byte[] byteArrIv = pManager.decode(sPassword.nextLine());
+					SecretKey sKey = pManager.generateKeySha256(strMasterPasswordToAuth, byteArrSalt);
+					String strDecryptedCredentials = pManager.decrypt(strEncryptedCredentials, byteArrIv, sKey);
 
-				String strEncryptedCredentials = sCredentials.nextLine();
-				sPassword.nextLine();
-				sPassword.nextLine();
-				byte[] byteArrSalt = pManager.decode(sPassword.nextLine());
-				byte[] byteArrIv = pManager.decode(sPassword.nextLine());
-				SecretKey sKey = pManager.generateKeySha256(strMasterPasswordToAuth, byteArrSalt);
-				String strDecryptedCredentials = pManager.decrypt(strEncryptedCredentials, byteArrIv, sKey);
+					FileWriter fWriterCredentials = new FileWriter(pManager.strPathToCredentials);
+					fWriterCredentials.append(strDecryptedCredentials);
 
-				FileWriter fWriterCredentials = new FileWriter(pManager.strPathToCredentials);
-				fWriterCredentials.append(strDecryptedCredentials);
-
-				fReaderPassword.close();
-				fReaderCredentials.close();
-				sPassword.close();
-				sCredentials.close();
-				fWriterCredentials.close();
-			} catch (Exception e) {
-				System.err.println(e + ": Decrypting process failed.");
+					fReaderPassword.close();
+					fReaderCredentials.close();
+					sPassword.close();
+					sCredentials.close();
+					fWriterCredentials.close();
+				} catch (Exception e) {
+					System.err.println(e + ": Decrypting process failed.");
+				}
 			}
 
+			
 			while (!pManager.boolExitProgram) {
 				pManager.promptOptions();
 			}
+				
 		} else {
 			pManager.getMasterPassword();
 
