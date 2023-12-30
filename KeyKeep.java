@@ -543,7 +543,7 @@ class PasswordManager extends PasswordBasedEncryptionDecryption {
 	}
 
 	protected void encryptCredentials() {
-		try {			
+		try {
 			FileReader fReaderCredentials = new FileReader(this.strPathToCredentials);
 			FileReader fReaderPassword = new FileReader(this.strPathToPassword);
 			Scanner sCredentials = new Scanner(fReaderCredentials);
@@ -631,7 +631,8 @@ public class KeyKeep {
 				System.out.print("Enter master password: ");
 				strMasterPasswordToAuth = console.nextLine();
 			} while (!pManager.authenticate(strMasterPasswordToAuth));
-			if (credentialFileEncrypted.exists()) {				
+
+			if (credentialFileEncrypted.exists()) {
 				try {
 					credentialFileEncrypted.renameTo(credentialFile);
 					FileReader fReaderPassword = new FileReader(pManager.strPathToPassword);
@@ -660,11 +661,10 @@ public class KeyKeep {
 				}
 			}
 
-			
 			while (!pManager.boolExitProgram) {
 				pManager.promptOptions();
 			}
-				
+
 		} else {
 			pManager.getMasterPassword();
 
