@@ -1,9 +1,112 @@
-import java.util.*;
-import java.io.*;
-import java.math.BigInteger;
-import java.security.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.security.SecureRandom;
+import java.security.spec.KeySpec;
+import java.util.Base64;
+import java.util.Scanner;
 
-class PasswordManager {
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+
+class PasswordBasedEncryptionDecryption {
+
+	private int T_LEN = 128;
+
+	private int KEY_SIZE = 256;
+
+	private int intSaltLen = 16;
+
+	private int IV_LEN = 12;
+
+	public byte[] generateSalt() {
+		SecureRandom sRand = new SecureRandom();
+		byte[] byteArrSalt = new byte[this.intSaltLen];
+		sRand.nextBytes(byteArrSalt);
+		return byteArrSalt;
+	}
+
+	public SecretKey generateKeySha256(String strMasterPassword, byte[] byteArrSalt) {
+		try {
+			KeySpec kSpec = new PBEKeySpec(strMasterPassword.toCharArray(), byteArrSalt, 600000, KEY_SIZE);
+			SecretKeyFactory skFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+			SecretKey sKey = new SecretKeySpec(skFactory.generateSecret(kSpec).getEncoded(), "AES");
+			return sKey;
+		} catch (Exception e) {
+			System.err.println(e + ": There was an error in the generateKeySha256 method.");
+		}
+
+		return null;
+	}
+
+	public SecretKey generateKeySha512(String strMasterPassword, byte[] byteArrSalt) {
+		try {
+			KeySpec kSpec = new PBEKeySpec(strMasterPassword.toCharArray(), byteArrSalt, 600000, 512);
+			SecretKeyFactory skFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+			SecretKey sKey = new SecretKeySpec(skFactory.generateSecret(kSpec).getEncoded(), "AES");
+			return sKey;
+		} catch (Exception e) {
+			System.err.println(e + ": There was an error in the generateKeySha512 method.");
+		}
+
+		return null;
+	}
+
+	public byte[] generateRandomIV() {
+		byte[] nonce = new byte[this.IV_LEN];
+		new SecureRandom().nextBytes(nonce);
+		return nonce;
+	}
+
+	public String encrypt(String strMessage, byte[] byteArrIv, SecretKey sKey) {
+		try {
+			byte[] byteArrMessage = strMessage.getBytes("UTF-8");
+			Cipher encryptCipher = Cipher.getInstance("AES/GCM/NoPadding");
+			encryptCipher.init(Cipher.ENCRYPT_MODE, sKey, new GCMParameterSpec(T_LEN, byteArrIv));
+			byte[] byteArrEncrypted = encryptCipher.doFinal(byteArrMessage);
+			return encode(byteArrEncrypted);
+		} catch (Exception e) {
+			System.err.println(e + ": There was an error in the encrypt method.");
+		}
+
+		return null;
+	}
+
+	public String decrypt(String strMessage, byte[] byteArrIv, SecretKey sKey) {
+		try {
+			byte[] byteArrMessage = decode(strMessage);
+			Cipher decryptCipher = Cipher.getInstance("AES/GCM/NoPadding");
+			decryptCipher.init(Cipher.DECRYPT_MODE, sKey, new GCMParameterSpec(T_LEN, byteArrIv));
+			byte[] byteArrDecrypted = decryptCipher.doFinal(byteArrMessage);
+			return new String(byteArrDecrypted);
+		} catch (Exception e) {
+			System.err.println(e + ": There was an error in the decrypt method.");
+		}
+
+		return null;
+	}
+
+	protected String encode(byte[] byteArrData) {
+		return Base64.getEncoder().encodeToString(byteArrData);
+	}
+
+	protected byte[] decode(String strData) {
+		try {
+			return Base64.getDecoder().decode(strData.getBytes());
+		} catch (Exception e) {
+			System.err.println(e + ": There was an error in the decode method.");
+		}
+
+		return null;
+	}
+}
+
+
+class PasswordManager extends PasswordBasedEncryptionDecryption {
 	Scanner console = new Scanner(System.in);
 	protected String strMasterPassword;
 	protected String strPathToPassword = "./.KeyKeepPassword.txt";
@@ -36,6 +139,7 @@ class PasswordManager {
 			FileReader fReader = new FileReader(this.strPathToPassword);
 			Scanner fScanner = new Scanner(fReader);
 			String strMasterPasswordHashInFile = "";
+			String strSalt = "";
 
 			if (!fScanner.hasNextLine()) {
 				System.out.println("There is no master password in the password file.");
@@ -44,10 +148,12 @@ class PasswordManager {
 				System.exit(1);
 			} else {
 				strMasterPasswordHashInFile = fScanner.nextLine();
-
+				strSalt = fScanner.nextLine();
 			}
 
-			if (this.hashPassword(strMasterPasswordToAuth).equals(strMasterPasswordHashInFile)) {
+			String strKey = this.encode(this.generateKeySha512(strMasterPasswordToAuth, this.decode(strSalt)).getEncoded());
+
+			if (strKey.equals(strMasterPasswordHashInFile)) {
 				fReader.close();
 				fScanner.close();
 				this.strMasterPassword = strMasterPasswordToAuth;
@@ -63,25 +169,13 @@ class PasswordManager {
 		return false;
 	}
 
-	protected String hashPassword(String strMasterPassword) {
-		try {
-			MessageDigest mDigest = MessageDigest.getInstance("SHA-256");
-			byte[] byteArrayMasterPassword = mDigest.digest(strMasterPassword.getBytes("UTF-8"));
-			BigInteger bigIntMasterPassword = new BigInteger(1, byteArrayMasterPassword);
-			return bigIntMasterPassword.toString(16);
-		} catch (Exception e) {
-			System.err.println(e + ": There was an error in the hashing method.");
-		}
-
-		return null;
-	}
-
 	protected void promptOptions() {
-
+		System.out.println();
 		System.out.println("Options: List accounts [ls], View password [vp platform_name email], Append an account [a platform_name email password], Remove an account [rm platform_name email], Update an account [up platform_name email password], Exit program [x]");
 		System.out.print(": ");
 		String strUserInput = console.nextLine();
 		String[] strArrUserInput = strUserInput.split("\\s");
+		System.out.println();
 
 		if (strUserInput.equals("ls")) {
 			if (strArrUserInput.length != 1) {
@@ -443,8 +537,52 @@ class PasswordManager {
 	}
 
 	protected void exitProgram() {
-		System.out.println("Exiting KeyKeep...");
 		this.boolExitProgram = true;
+		System.exit(0);
+	}
+
+	protected void encryptCredentials() {
+		try {
+			// TODO: Encrypt file
+			FileReader fReaderCredentials = new FileReader(this.strPathToCredentials);
+			FileReader fReaderPassword = new FileReader(this.strPathToPassword);
+			Scanner sCredentials = new Scanner(fReaderCredentials);
+			Scanner sPassword = new Scanner(fReaderPassword);
+			String strContentCredentials = "";
+			String strContentPassword = "";
+
+			while (sCredentials.hasNextLine()) {
+				if (strContentCredentials.equals("")) {
+					strContentCredentials = sCredentials.nextLine();
+				} else {
+					strContentCredentials += "\n" + sCredentials.nextLine();
+				}
+			}
+
+			strContentPassword = sPassword.nextLine() + "\n" + sPassword.nextLine();
+			byte[] byteArrSalt = this.generateSalt();
+			SecretKey sKey = this.generateKeySha256(strMasterPassword, byteArrSalt);
+			byte[] byteArrIv = this.generateRandomIV();
+
+			String strEncryptedCredentials = this.encrypt(strContentCredentials, byteArrIv, sKey);
+			strContentPassword += "\n" + this.encode(byteArrSalt) + "\n" + this.encode(byteArrIv);
+			FileWriter fWriterCredentials = new FileWriter(this.strPathToCredentials);
+			FileWriter fWriterPassword = new FileWriter(this.strPathToPassword);
+			fWriterCredentials.append(strEncryptedCredentials);
+			fWriterPassword.append(strContentPassword);
+			fReaderCredentials.close();
+			fReaderPassword.close();
+			sCredentials.close();
+			sPassword.close();
+			fWriterCredentials.close();
+			fWriterPassword.close();
+			System.out.println();
+			System.out.println("File encrypted successfully.");
+		} catch (Exception e) {
+			System.err.println(e + ": There was an error in the exitProgram method.");
+		}
+
+		System.out.println("Exiting KeyKeep...");
 	}
 }
 
@@ -454,6 +592,25 @@ public class KeyKeep {
 	public static void main(String[] args) {
 		PasswordManager pManager = new PasswordManager();
 		Scanner console = new Scanner(System.in);
+
+		// Runtime catcher: call the exitProgram to encrypt file even if forcibly closed
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+
+			public void run() {
+				try {
+					Thread.sleep(200);
+					File credentialFile = new File(pManager.strPathToCredentials);
+
+					if (credentialFile.exists()) {
+						pManager.encryptCredentials();
+					}
+
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					e.printStackTrace();
+				}
+			}
+		});
 
 		// Print program name
 		pManager.welcome();
@@ -471,6 +628,32 @@ public class KeyKeep {
 			} while (!pManager.authenticate(strMasterPasswordToAuth));
 
 			// TODO: DECRYPT CREDENTIALS
+			try {
+				FileReader fReaderPassword = new FileReader(pManager.strPathToPassword);
+				FileReader fReaderCredentials = new FileReader(pManager.strPathToCredentials);
+				Scanner sPassword = new Scanner(fReaderPassword);
+				Scanner sCredentials = new Scanner(fReaderCredentials);
+
+				String strEncryptedCredentials = sCredentials.nextLine();
+				sPassword.nextLine();
+				sPassword.nextLine();
+				byte[] byteArrSalt = pManager.decode(sPassword.nextLine());
+				byte[] byteArrIv = pManager.decode(sPassword.nextLine());
+				SecretKey sKey = pManager.generateKeySha256(strMasterPasswordToAuth, byteArrSalt);
+				String strDecryptedCredentials = pManager.decrypt(strEncryptedCredentials, byteArrIv, sKey);
+
+				FileWriter fWriterCredentials = new FileWriter(pManager.strPathToCredentials);
+				fWriterCredentials.append(strDecryptedCredentials);
+
+				fReaderPassword.close();
+				fReaderCredentials.close();
+				sPassword.close();
+				sCredentials.close();
+				fWriterCredentials.close();
+			} catch (Exception e) {
+				System.err.println(e + ": Decrypting process failed.");
+			}
+
 			while (!pManager.boolExitProgram) {
 				pManager.promptOptions();
 			}
@@ -481,7 +664,10 @@ public class KeyKeep {
 				passFile.createNewFile();
 				credentialFile.createNewFile();
 				FileWriter fWriterPassWrite = new FileWriter(pManager.strPathToPassword);
-				fWriterPassWrite.write(pManager.hashPassword(pManager.strMasterPassword));
+				byte[] byteArrSalt = pManager.generateSalt();
+				String strContent = pManager.encode(pManager.generateKeySha512(pManager.strMasterPassword, byteArrSalt).getEncoded());
+				strContent += "\n" + pManager.encode(byteArrSalt);
+				fWriterPassWrite.write(strContent);
 				fWriterPassWrite.close();
 
 				while (!pManager.boolExitProgram) {
