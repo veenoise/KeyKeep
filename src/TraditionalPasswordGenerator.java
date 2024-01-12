@@ -1,5 +1,9 @@
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class TraditionalPasswordGenerator {
@@ -47,7 +51,7 @@ public class TraditionalPasswordGenerator {
         return 0; // Default return statement
     }
 
-    public static void main(String[] args) {
+    public void mainGeneratePassword() {
 
         boolean continueGenerating = true;
 
@@ -71,7 +75,7 @@ public class TraditionalPasswordGenerator {
                 strAnswer = console.nextLine();
 
                 while (!strAnswer.equals("1") && !strAnswer.equals("2")) {
-                    System.out.println("Invalid input. Please enter 1 or 2: ");
+                    System.out.print("Invalid input. Please enter 1 or 2: ");
                     strAnswer = console.nextLine();
                 }
 

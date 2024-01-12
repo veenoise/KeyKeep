@@ -72,7 +72,7 @@ public class PasswordManager extends PasswordBasedEncryptionDecryption {
 
 	protected void promptOptions() {
 		System.out.println();
-		System.out.println("Options: List accounts [ls], View password [vp platform_name email], Append an account [a platform_name email password], Remove an account [rm platform_name email], Update an account [up platform_name email password], Exit program [x]");
+		System.out.println("Options: List accounts [ls], View password [vp platform_name email], Append an account [a platform_name email password], Remove an account [rm platform_name email], Update an account [up platform_name email password], Generate password (Traditional) [gpt], Exit program [x]");
 		System.out.print(": ");
 		String strUserInput = console.nextLine();
 		String[] strArrUserInput = strUserInput.split("\\s");
@@ -121,6 +121,17 @@ public class PasswordManager extends PasswordBasedEncryptionDecryption {
 			} else {
 				try {
 					this.updateAccount(strArrUserInput[1], strArrUserInput[2], strArrUserInput[3]);
+				} catch (Exception e) {
+					System.err.println(e + ": Improper use of the program.");
+				}
+			}
+		} else if (strUserInput.equals("gpt")) {
+			if (strArrUserInput.length != 1) {				
+				System.out.println("Improper use of the program.");
+			} else {
+				try {
+					TraditionalPasswordGenerator tPasswordGenerator = new TraditionalPasswordGenerator();
+					tPasswordGenerator.mainGeneratePassword();
 				} catch (Exception e) {
 					System.err.println(e + ": Improper use of the program.");
 				}

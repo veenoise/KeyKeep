@@ -13,42 +13,7 @@ public class KeyKeep {
 		Scanner console = new Scanner(System.in);
 
 		// Print program name
-		pManager.welcome();
-
-		Boolean boolContinue = false;
-		int intAns = 0;
-
-		do {
-			System.out.print("KeyKeep Features:\n"
-					+ "1. Password Generator\n"
-					+ "2. Password Manager\n"
-					+ "3. Exit\n"
-					+ "Enter choice: ");
-			intAns = console.nextInt();
-			console.nextLine();
-
-			if (intAns < 1 || intAns > 3) {
-				System.out.println("Invalid input. Please enter a number from 1 to 3.\n");
-				boolContinue = true;
-				continue;
-			}
-
-			switch (intAns) {
-				case 1:
-					TraditionalPasswordGenerator.main(args);
-					boolContinue = true;
-					break;
-				case 2:
-					System.out.println("\nPassword Manager\n");
-					boolContinue = false;
-					break;
-				case 3:
-					System.out.println("Exiting...");
-					System.exit(0);
-					break;
-			}
-
-		} while (boolContinue);
+		pManager.welcome();	
 
 		// Runtime catcher: call the exitProgram to encrypt file even if forcibly closed
 		Runtime.getRuntime().addShutdownHook(new Thread() {
