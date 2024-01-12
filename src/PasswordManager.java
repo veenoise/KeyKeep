@@ -243,7 +243,7 @@ public class PasswordManager extends PasswordBasedEncryptionDecryption {
 						if (strBuffer.startsWith("Platform: ") && !strBuffer.equals("Platform: " + strPlatform)) {
 							break;
 						}
-						
+
 						if (strBuffer.equals("Email: " + strAccountName)) {
 							boolAccountFound = true;
 						}
