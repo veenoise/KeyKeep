@@ -13,7 +13,7 @@ public class KeyKeep {
 		Scanner console = new Scanner(System.in);
 
 		// Print program name
-		pManager.welcome();	
+		pManager.welcome();
 
 		// Runtime catcher: call the exitProgram to encrypt file even if forcibly closed
 		Runtime.getRuntime().addShutdownHook(new Thread() {
