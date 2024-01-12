@@ -6,286 +6,304 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+
 public class TraditionalPasswordGenerator {
-    
-    static Scanner console = new Scanner(System.in);
-    protected static String strAnswer;
-    protected static int intSize;
-    protected static boolean blUseUppercase;
-    protected static boolean blUseLowercase;
-    protected static boolean blUsePunctuation;
-    protected static boolean blUseDigit;
-    private static final String strLowercaseList = "abcdefghijklmnopqrstuvwxyz";
-    private static final String strUppercaseList = strLowercaseList.toUpperCase();
-    private static final String strDigitList = "0123456789";                                                                                                                                                                        
-    private static final String strPunctuationList = "!@#&()-[{}]:;',?/*~$^+=<>";
-    private static final int intMaxLength = 20;
 
-    private static final String strPasswordList =
-            strLowercaseList + strUppercaseList + strDigitList + strPunctuationList;
+	static Scanner console = new Scanner(System.in);
+	protected static String strAnswer;
+	protected static int intSize;
+	protected static boolean blUseUppercase;
+	protected static boolean blUseLowercase;
+	protected static boolean blUsePunctuation;
+	protected static boolean blUseDigit;
 
-    private static SecureRandom random = new SecureRandom();
+	private static final String strLowercaseList = "abcdefghijklmnopqrstuvwxyz";
 
-    public static boolean answerChecker() {
-        while (true) {
-            String input = console.nextLine().trim();
-            if (input.equalsIgnoreCase("y")) {
-                return true;
-            } else if (input.equalsIgnoreCase("n")) {
-                return false;
-            } else {
-                System.out.print("Invalid input. Please enter 'Y' or 'N': ");
-            }
-        }
-    }  
+	private static final String strUppercaseList = strLowercaseList.toUpperCase();
 
-    public static int countChecker(int intInput) {
-        if (intInput == 1) {
-            return 1;
-        } else if (intInput == 2) {
-            return 4;
-        } else if (intInput == 3 || intInput == 4) {
-            return 2;
-        } 
+	private static final String strDigitList = "0123456789";
 
-        return 0; // Default return statement
-    }
+	private static final String strPunctuationList = "!@#&()-[{}]:;',?/*~$^+=<>";
 
-    public void mainGeneratePassword() {
+	private static final int intMaxLength = 20;
 
-        boolean continueGenerating = true;
+	private static final String strPasswordList =
+		strLowercaseList + strUppercaseList + strDigitList + strPunctuationList;
 
-        while (continueGenerating) {    
-            try {
-                System.out.println("\nPassword Generator");
-                System.out.print("Choose a password length between 8 and 20 characters: ");
-                intSize = console.nextInt();
-                while (intSize < 8 || intSize > 20) {
-                    System.out.print("Invalid input. Please enter a number between 8 and 20: ");
-                    intSize = console.nextInt();
-                }
+	private static SecureRandom random = new SecureRandom();
 
-                //get the left out next line
-                console.nextLine();
+	public static boolean answerChecker() {
+		while (true) {
+			String input = console.nextLine().trim();
 
-                System.out.println("\nChoose a password type:");
-                System.out.println("1. Default");
-                System.out.println("2. Customized");
-                System.out.print("\nEnter the number of your choice: ");
-                strAnswer = console.nextLine();
+			if (input.equalsIgnoreCase("y")) {
+				return true;
+			} else if (input.equalsIgnoreCase("n")) {
+				return false;
+			} else {
+				System.out.print("Invalid input. Please enter 'Y' or 'N': ");
+			}
+		}
+	}
 
-                while (!strAnswer.equals("1") && !strAnswer.equals("2")) {
-                    System.out.print("Invalid input. Please enter 1 or 2: ");
-                    strAnswer = console.nextLine();
-                }
+	public static int countChecker(int intInput) {
+		if (intInput == 1) {
+			return 1;
+		} else if (intInput == 2) {
+			return 4;
+		} else if (intInput == 3 || intInput == 4) {
+			return 2;
+		}
 
-                if (strAnswer.equals("1")) {
-                    System.out.println("\nYour password is: " + generateStrongPassword());
-                } else {
-                    do {
-                        System.out.println("\nCustomize your password:");
-                        System.out.print("Do you want uppercase letters? (Y/N): ");
-                        blUseUppercase = answerChecker();
-                        System.out.print("Do you want lowercase letters? (Y/N): ");
-                        blUseLowercase = answerChecker();
-                        System.out.print("Do you want numbers? (Y/N): ");
-                        blUseDigit = answerChecker();
-                        System.out.print("Do you want punctuations? (Y/N): ");
-                        blUsePunctuation = answerChecker();
-                        System.err.print("\n");
+		return 0; // Default return statement
+	}
 
-                        if (!(blUseUppercase || blUseLowercase || blUseDigit || blUsePunctuation)) {
-                            System.out.print("Please select at least one option (Y/N): ");
-                            console.nextLine();
-                        }
+	public void mainGeneratePassword() {
 
-                    } while (!blUseUppercase && !blUseLowercase && !blUseDigit && !blUsePunctuation);
+		boolean continueGenerating = true;
 
-                    //count how many true values
-                    int intCount = 0;
-                    if (blUseUppercase) {
-                        intCount++;
-                    }
-                    if (blUseLowercase) {
-                        intCount++;
-                    }
-                    if (blUseDigit) {
-                        intCount++;
-                    }
-                    if (blUsePunctuation) {
-                        intCount++;
-                    }
+		while (continueGenerating) {
+			try {
+				System.out.println("\nPassword Generator");
+				System.out.print("Choose a password length between 8 and 20 characters: ");
+				intSize = console.nextInt();
 
-                    if (blUseUppercase && blUseLowercase && blUseDigit && blUsePunctuation) {
-                        System.out.println("\nYour password is: " + generateStrongPassword());
-                    } else if (blUseUppercase && blUseLowercase && blUseDigit) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, true, false));
-                    } else if (blUseUppercase && blUseLowercase && blUsePunctuation) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, false, true));
-                    } else if (blUseUppercase && blUseDigit && blUsePunctuation) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, true, true));
-                    } else if (blUseLowercase && blUseDigit && blUsePunctuation) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, true, true));
-                    } else if (blUseUppercase && blUseLowercase) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, false, false));
-                    } else if (blUseUppercase && blUseDigit) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, true, false));
-                    } else if (blUseUppercase && blUsePunctuation) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, false, true));
-                    } else if (blUseLowercase && blUseDigit) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, true, false));
-                    } else if (blUseLowercase && blUsePunctuation) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, false, true));
-                    } else if (blUseDigit && blUsePunctuation) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, true, true));
-                    } else if (blUseUppercase) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, false, false));
-                    } else if (blUseLowercase) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, false, false));
-                    } else if (blUseDigit) {  
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, true, false));
-                    } else if (blUsePunctuation) {
-                        System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, false, true));
-                    }
-            
-                }
-                
-                System.out.print("\nDo you want to generate another password? (Y/N): ");
-                char userChoice;
-                while (true) {
-                    try {
-                        userChoice = Character.toUpperCase(console.next().charAt(0));
-                
-                        if (userChoice == 'Y') {
-                            break;
-                        } else if (userChoice == 'N') {
-                            break;
-                        } else {
-                            System.out.println("Invalid input. Please enter 'Y' or 'N'.");
-                            System.out.print("Do you want to generate another password? (Y/N): ");
-                        }
-                    } catch (StringIndexOutOfBoundsException e) {
-                        System.out.println("Invalid input. Please enter 'Y' or 'N'.");
-                        System.out.print("Do you want to generate another password? (Y/N): ");
-                    }
-                }   continueGenerating = (userChoice == 'Y');
+				while (intSize < 8 || intSize > 20) {
+					System.out.print("Invalid input. Please enter a number between 8 and 20: ");
+					intSize = console.nextInt();
+				}
 
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a valid number.");
-                console.nextLine();
-            }
-        }
-    }
+				//get the left out next line
+				console.nextLine();
 
-    public static String generateStrongPassword() {
+				System.out.println("\nChoose a password type:");
+				System.out.println("1. Default");
+				System.out.println("2. Customized");
+				System.out.print("\nEnter the number of your choice: ");
+				strAnswer = console.nextLine();
 
-        StringBuilder result = new StringBuilder(intMaxLength);
+				while (!strAnswer.equals("1") && !strAnswer.equals("2")) {
+					System.out.print("Invalid input. Please enter 1 or 2: ");
+					strAnswer = console.nextLine();
+				}
 
-        // at least 2 chars (lowercase)
-        String strLowerCase = generateRandomString(strLowercaseList, 2);
-        result.append(strLowerCase);
+				if (strAnswer.equals("1")) {
+					System.out.println("\nYour password is: " + generateStrongPassword());
+				} else {
+					do {
+						System.out.println("\nCustomize your password:");
+						System.out.print("Do you want uppercase letters? (Y/N): ");
+						blUseUppercase = answerChecker();
+						System.out.print("Do you want lowercase letters? (Y/N): ");
+						blUseLowercase = answerChecker();
+						System.out.print("Do you want numbers? (Y/N): ");
+						blUseDigit = answerChecker();
+						System.out.print("Do you want punctuations? (Y/N): ");
+						blUsePunctuation = answerChecker();
+						System.err.print("\n");
 
-        // at least 2 chars (uppercase)
-        String strUppercaseCase = generateRandomString(strUppercaseList, 2);
-        result.append(strUppercaseCase);
+						if (!(blUseUppercase || blUseLowercase || blUseDigit || blUsePunctuation)) {
+							System.out.print("Please select at least one option (Y/N): ");
+							console.nextLine();
+						}
 
-        // at least 2 digits
-        String strDigit = generateRandomString(strDigitList, 2);
-        result.append(strDigit);
+					} while (!blUseUppercase && !blUseLowercase && !blUseDigit && !blUsePunctuation);
 
-        // at least 2 punctuations
-        String strPunctuation = generateRandomString(strPunctuationList, 2);
-        result.append(strPunctuation);
+					//count how many true values
+					int intCount = 0;
 
-        if (intSize == 8) {
-            String strPassword = result.toString();
-            System.out.format("%-20s: %s%n", "Unshuffled Password", shuffleString(strPassword));
-            System.out.format("%-20s: %s%n%n", "Password Length", strPassword.length());
-            return strPassword;
-        }
+					if (blUseUppercase) {
+						intCount++;
+					}
 
-        // remaining, just random
-        String strOther = generateRandomString(strPasswordList, intSize - 8);
-        result.append(strOther);
+					if (blUseLowercase) {
+						intCount++;
+					}
 
-        String strPassword = result.toString();
+					if (blUseDigit) {
+						intCount++;
+					}
 
-        // shuffle
-        System.out.format("%-20s: %s%n", "Unshuffled Password", shuffleString(strPassword));
-        System.out.format("%-20s: %s%n%n", "Password Length", strPassword.length());
-        return strPassword;
-    }
+					if (blUsePunctuation) {
+						intCount++;
+					}
 
-    public static String generateStrongPassword(int intCount, boolean blUppercase, boolean blLowercase, boolean blDigit, boolean blPunctuation) {
+					if (blUseUppercase && blUseLowercase && blUseDigit && blUsePunctuation) {
+						System.out.println("\nYour password is: " + generateStrongPassword());
+					} else if (blUseUppercase && blUseLowercase && blUseDigit) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, true, false));
+					} else if (blUseUppercase && blUseLowercase && blUsePunctuation) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, false, true));
+					} else if (blUseUppercase && blUseDigit && blUsePunctuation) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, true, true));
+					} else if (blUseLowercase && blUseDigit && blUsePunctuation) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, true, true));
+					} else if (blUseUppercase && blUseLowercase) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, false, false));
+					} else if (blUseUppercase && blUseDigit) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, true, false));
+					} else if (blUseUppercase && blUsePunctuation) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, false, true));
+					} else if (blUseLowercase && blUseDigit) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, true, false));
+					} else if (blUseLowercase && blUsePunctuation) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, false, true));
+					} else if (blUseDigit && blUsePunctuation) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, true, true));
+					} else if (blUseUppercase) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, false, false));
+					} else if (blUseLowercase) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, false, false));
+					} else if (blUseDigit) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, true, false));
+					} else if (blUsePunctuation) {
+						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, false, true));
+					}
 
-        StringBuilder result = new StringBuilder(intMaxLength);
-        String strPasswordChoice = "";
+				}
 
-        if (blUppercase) {
-            String strUppercaseCase = generateRandomString(strUppercaseList, countChecker(intCount));
-            strPasswordChoice = strUppercaseList;
-            result.append(strUppercaseCase);
-        }
+				System.out.print("\nDo you want to generate another password? (Y/N): ");
+				char userChoice;
 
-        if (blLowercase) {
-            String strLowerCase = generateRandomString(strLowercaseList, countChecker(intCount));
-            strPasswordChoice = strPasswordChoice + strLowercaseList;
-            result.append(strLowerCase);
-        }
+				while (true) {
+					try {
+						userChoice = Character.toUpperCase(console.next().charAt(0));
 
-        if (blDigit) {
-            String strDigit = generateRandomString(strDigitList, countChecker(intCount));
-            strPasswordChoice = strPasswordChoice + strDigitList;
-            result.append(strDigit);
-        }
+						if (userChoice == 'Y') {
+							break;
+						} else if (userChoice == 'N') {
+							break;
+						} else {
+							System.out.println("Invalid input. Please enter 'Y' or 'N'.");
+							System.out.print("Do you want to generate another password? (Y/N): ");
+						}
+					} catch (StringIndexOutOfBoundsException e) {
+						System.out.println("Invalid input. Please enter 'Y' or 'N'.");
+						System.out.print("Do you want to generate another password? (Y/N): ");
+					}
+				}
 
-        if (blPunctuation) {
-            String strPunctuation = generateRandomString(strPunctuationList, countChecker(intCount));
-            strPasswordChoice = strPasswordChoice + strPunctuationList;
-            result.append(strPunctuation);
-        }
+				continueGenerating = (userChoice == 'Y');
 
-        if (intSize == 8 && result.length() == 8) {
-            String strPassword = result.toString();
-            System.out.format("%-20s: %s%n", "Unshuffled Password", shuffleString(strPassword));
-            System.out.format("%-20s: %s%n%n", "Password Length", strPassword.length());
-            return strPassword;
-        }
+			} catch (InputMismatchException e) {
+				System.out.println("Invalid input. Please enter a valid number.");
+				console.nextLine();
+			}
+		}
+	}
 
-        // remaining, just random
-        String strOther = generateRandomString(strPasswordChoice, intSize - result.length());
-        result.append(strOther);
+	public static String generateStrongPassword() {
 
-        String strPassword = result.toString();
+		StringBuilder result = new StringBuilder(intMaxLength);
 
-        // shuffle
-        System.out.format("%-20s: %s%n", "Unshuffled Password", shuffleString(strPassword));
-        System.out.format("%-20s: %s%n%n", "Password Length", strPassword.length());
-        return strPassword;
-    }
+		// at least 2 chars (lowercase)
+		String strLowerCase = generateRandomString(strLowercaseList, 2);
+		result.append(strLowerCase);
 
-    // generate a random char[], based on `input`
-    private static String generateRandomString(String input, int size) {
+		// at least 2 chars (uppercase)
+		String strUppercaseCase = generateRandomString(strUppercaseList, 2);
+		result.append(strUppercaseCase);
 
-        if (input == null || input.length() <= 0) 
-            throw new IllegalArgumentException("Invalid input.");
-        if (size < 1) throw new IllegalArgumentException("Invalid size.");
+		// at least 2 digits
+		String strDigit = generateRandomString(strDigitList, 2);
+		result.append(strDigit);
 
-        StringBuilder result = new StringBuilder(size);
-        for (int i = 0; i < size; i++) {
-            // produce a random order
-            int index = random.nextInt(input.length());
-            result.append(input.charAt(index));
-        }
-        return result.toString();
-    }
+		// at least 2 punctuations
+		String strPunctuation = generateRandomString(strPunctuationList, 2);
+		result.append(strPunctuation);
 
-    // for final password, make it more random
-    public static String shuffleString(String input) {
-        List<String> result = Arrays.asList(input.split(""));
-        Collections.shuffle(result);
-        // java 8
-        return result.stream().collect(Collectors.joining());
-    }
+		if (intSize == 8) {
+			String strPassword = result.toString();
+			System.out.format("%-20s: %s%n", "Unshuffled Password", shuffleString(strPassword));
+			System.out.format("%-20s: %s%n%n", "Password Length", strPassword.length());
+			return strPassword;
+		}
+
+		// remaining, just random
+		String strOther = generateRandomString(strPasswordList, intSize - 8);
+		result.append(strOther);
+
+		String strPassword = result.toString();
+
+		// shuffle
+		System.out.format("%-20s: %s%n", "Unshuffled Password", shuffleString(strPassword));
+		System.out.format("%-20s: %s%n%n", "Password Length", strPassword.length());
+		return strPassword;
+	}
+
+	public static String generateStrongPassword(int intCount, boolean blUppercase, boolean blLowercase, boolean blDigit, boolean blPunctuation) {
+
+		StringBuilder result = new StringBuilder(intMaxLength);
+		String strPasswordChoice = "";
+
+		if (blUppercase) {
+			String strUppercaseCase = generateRandomString(strUppercaseList, countChecker(intCount));
+			strPasswordChoice = strUppercaseList;
+			result.append(strUppercaseCase);
+		}
+
+		if (blLowercase) {
+			String strLowerCase = generateRandomString(strLowercaseList, countChecker(intCount));
+			strPasswordChoice = strPasswordChoice + strLowercaseList;
+			result.append(strLowerCase);
+		}
+
+		if (blDigit) {
+			String strDigit = generateRandomString(strDigitList, countChecker(intCount));
+			strPasswordChoice = strPasswordChoice + strDigitList;
+			result.append(strDigit);
+		}
+
+		if (blPunctuation) {
+			String strPunctuation = generateRandomString(strPunctuationList, countChecker(intCount));
+			strPasswordChoice = strPasswordChoice + strPunctuationList;
+			result.append(strPunctuation);
+		}
+
+		if (intSize == 8 && result.length() == 8) {
+			String strPassword = result.toString();
+			System.out.format("%-20s: %s%n", "Unshuffled Password", shuffleString(strPassword));
+			System.out.format("%-20s: %s%n%n", "Password Length", strPassword.length());
+			return strPassword;
+		}
+
+		// remaining, just random
+		String strOther = generateRandomString(strPasswordChoice, intSize - result.length());
+		result.append(strOther);
+
+		String strPassword = result.toString();
+
+		// shuffle
+		System.out.format("%-20s: %s%n", "Unshuffled Password", shuffleString(strPassword));
+		System.out.format("%-20s: %s%n%n", "Password Length", strPassword.length());
+		return strPassword;
+	}
+
+	// generate a random char[], based on `input`
+	private static String generateRandomString(String input, int size) {
+
+		if (input == null || input.length() <= 0)
+			throw new IllegalArgumentException("Invalid input.");
+
+		if (size < 1) throw new IllegalArgumentException("Invalid size.");
+
+		StringBuilder result = new StringBuilder(size);
+
+		for (int i = 0; i < size; i++) {
+			// produce a random order
+			int index = random.nextInt(input.length());
+			result.append(input.charAt(index));
+		}
+
+		return result.toString();
+	}
+
+	// for final password, make it more random
+	public static String shuffleString(String input) {
+		List<String> result = Arrays.asList(input.split(""));
+		Collections.shuffle(result);
+		// java 8
+		return result.stream().collect(Collectors.joining());
+	}
 
 }
