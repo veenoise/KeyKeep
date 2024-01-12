@@ -72,7 +72,7 @@ public class PasswordManager extends PasswordBasedEncryptionDecryption {
 
 	protected void promptOptions() {
 		System.out.println();
-		System.out.println("Options: List accounts [ls], View password [vp platform_name email], Append an account [a platform_name email password], Remove an account [rm platform_name email], Update an account [up platform_name email password], Generate password (Traditional) [gpt], Exit program [x]");
+		System.out.println("Options: List accounts [ls], View password [vp platform_name email], Append an account [a platform_name email password], Remove an account [rm platform_name email], Update an account [up platform_name email password], Generate password (Traditional) [gpt], Generate password (passphrase) [gpp], Exit program [x]");
 		System.out.print(": ");
 		String strUserInput = console.nextLine();
 		String[] strArrUserInput = strUserInput.split("\\s");
@@ -126,12 +126,23 @@ public class PasswordManager extends PasswordBasedEncryptionDecryption {
 				}
 			}
 		} else if (strUserInput.equals("gpt")) {
-			if (strArrUserInput.length != 1) {				
+			if (strArrUserInput.length != 1) {
 				System.out.println("Improper use of the program.");
 			} else {
 				try {
 					TraditionalPasswordGenerator tPasswordGenerator = new TraditionalPasswordGenerator();
 					tPasswordGenerator.mainGeneratePassword();
+				} catch (Exception e) {
+					System.err.println(e + ": Improper use of the program.");
+				}
+			}
+		} else if (strUserInput.equals("gpp")) {
+			if (strArrUserInput.length != 1) {
+				System.out.println("Improper use of the program.");
+			} else {
+				try {
+					PassphraseGeneratorV2 pGeneratorV2 = new PassphraseGeneratorV2();
+					pGeneratorV2.mainGeneratePassword();
 				} catch (Exception e) {
 					System.err.println(e + ": Improper use of the program.");
 				}
