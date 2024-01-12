@@ -2,6 +2,8 @@ bin
 
 *.class
 
-*.txt
+.KeyKeepPassword.txt
+
+.KeyKeepCredentials.txt
 
 *.txt.cpt
