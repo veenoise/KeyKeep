@@ -240,6 +240,10 @@ public class PasswordManager extends PasswordBasedEncryptionDecryption {
 					while (fScanner.hasNextLine()) {
 						strBuffer = fScanner.nextLine();
 
+						if (strBuffer.startsWith("Platform: ") && !strBuffer.equals("Platform: " + strPlatform)) {
+							break;
+						}
+						
 						if (strBuffer.equals("Email: " + strAccountName)) {
 							boolAccountFound = true;
 						}
