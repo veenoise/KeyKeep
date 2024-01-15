@@ -8,6 +8,8 @@ import java.util.Scanner;
 
 public class PassphraseGeneratorV2 {
 
+	static Scanner scanner = new Scanner(System.in);
+
 	public void mainGeneratePassword() {
 
 		String filePath = "dictionary.txt";
@@ -22,7 +24,6 @@ public class PassphraseGeneratorV2 {
 			"~", "*", "-", "+", "="
 		};
 
-		Scanner scanner = new Scanner(System.in);
 		Character continueChoice;
 		String combinationChoice;
 		int numChoice;
@@ -80,7 +81,9 @@ public class PassphraseGeneratorV2 {
 											break;
 									}
 
-									if (!Arrays.asList(combinationValues).contains(4)) {
+									if (!Arrays.asList(combinationValues).contains(new int[] {
+											4
+										})) {
 										delimiterRandomizedIndex = getRandomIndex(PassphraseDelimiters);
 									}
 								}

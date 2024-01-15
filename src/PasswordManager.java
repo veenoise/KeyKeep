@@ -489,20 +489,18 @@ public class PasswordManager extends PasswordBasedEncryptionDecryption {
 			byte[] byteArrSalt = this.generateSalt();
 			SecretKey sKey = this.generateKeySha256(strMasterPassword, byteArrSalt);
 			byte[] byteArrIv = this.generateRandomIV();
-
 			String strEncryptedCredentials = this.encrypt(strContentCredentials, byteArrIv, sKey);
 			strContentPassword += "\n" + this.encode(byteArrSalt) + "\n" + this.encode(byteArrIv);
-			FileWriter fWriterCredentials = new FileWriter(this.strPathToCredentials);
-			FileWriter fWriterPassword = new FileWriter(this.strPathToPassword);
-			File fEncryptedCredentials = new File(this.strPathtToEncryptedCredentials);
-			File fCredentials = new File(this.strPathToCredentials);
-			fCredentials.renameTo(fEncryptedCredentials);
-			fWriterCredentials.append(strEncryptedCredentials);
-			fWriterPassword.append(strContentPassword);
 			fReaderCredentials.close();
 			fReaderPassword.close();
 			sCredentials.close();
 			sPassword.close();
+			File fCredentials = new File(this.strPathToCredentials);
+			fCredentials.renameTo(new File(this.strPathtToEncryptedCredentials));
+			FileWriter fWriterCredentials = new FileWriter(this.strPathtToEncryptedCredentials);
+			FileWriter fWriterPassword = new FileWriter(this.strPathToPassword);
+			fWriterCredentials.append(strEncryptedCredentials);
+			fWriterPassword.append(strContentPassword);
 			fWriterCredentials.close();
 			fWriterPassword.close();
 			System.out.println();
