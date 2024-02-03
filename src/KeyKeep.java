@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.util.Scanner;
 
 import javax.crypto.SecretKey;
+import javax.swing.JOptionPane;
 
 
 public class KeyKeep {
@@ -45,7 +46,7 @@ public class KeyKeep {
 
 			do {
 				System.out.print("Enter master password: ");
-				strMasterPasswordToAuth = console.nextLine();
+				strMasterPasswordToAuth = JOptionPane.showInputDialog(null, "Enter Master Password", "KeyKeep", JOptionPane.WARNING_MESSAGE);
 			} while (!pManager.authenticate(strMasterPasswordToAuth));
 
 			if (credentialFileEncrypted.exists()) {
@@ -77,9 +78,13 @@ public class KeyKeep {
 				}
 			}
 
-			while (!pManager.boolExitProgram) {
-				pManager.promptOptions();
-			}
+			KeyKeepGui kkGui = new KeyKeepGui();
+			kkGui.gui();
+
+
+			// while (!pManager.boolExitProgram) {
+			// 	pManager.promptOptions();
+			// }
 
 		} else {
 			pManager.getMasterPassword();
@@ -94,9 +99,13 @@ public class KeyKeep {
 				fWriterPassWrite.write(strContent);
 				fWriterPassWrite.close();
 
-				while (!pManager.boolExitProgram) {
-					pManager.promptOptions();
-				}
+
+				KeyKeepGui kkGui = new KeyKeepGui();
+				kkGui.gui();
+
+				// while (!pManager.boolExitProgram) {
+				// 	pManager.promptOptions();
+				// }
 			} catch (Exception e) {
 				System.err.println(e + ": Encountered an error in creating files.");
 				System.out.println("Exiting...");

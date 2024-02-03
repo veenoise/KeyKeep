@@ -58,139 +58,154 @@ public class TraditionalPasswordGenerator {
 		return 0; // Default return statement
 	}
 
-	public void mainGeneratePassword() {
+	public String mainGeneratePassword(int intLen, boolean boolUpper, boolean boolLower, boolean boolNum, boolean boolPunc) {
 
-		boolean continueGenerating = true;
+		try {
+			System.out.println("\nPassword Generator");
+			System.out.print("Choose a password length between 8 and 20 characters: ");
+			intSize = intLen;
 
-		while (continueGenerating) {
-			try {
-				System.out.println("\nPassword Generator");
-				System.out.print("Choose a password length between 8 and 20 characters: ");
-				intSize = console.nextInt();
 
-				while (intSize < 8 || intSize > 20) {
-					System.out.print("Invalid input. Please enter a number between 8 and 20: ");
-					intSize = console.nextInt();
+			System.out.println("\nChoose a password type:");
+			System.out.println("1. Default");
+			System.out.println("2. Customized");
+			System.out.print("\nEnter the number of your choice: ");
+
+			strAnswer = "2";
+
+
+			if (strAnswer.equals("1")) {
+				System.out.println("\nYour password is: " + generateStrongPassword());
+				return generateStrongPassword();
+			} else {
+			
+				System.out.println("\nCustomize your password:");
+				System.out.print("Do you want uppercase letters? (Y/N): ");
+				blUseUppercase = boolUpper;
+				System.out.print("Do you want lowercase letters? (Y/N): ");
+				blUseLowercase = boolLower;
+				System.out.print("Do you want numbers? (Y/N): ");
+				blUseDigit = boolNum;
+				System.out.print("Do you want punctuations? (Y/N): ");
+				blUsePunctuation = boolPunc;
+				System.err.print("\n");
+
+				//count how many true values
+				int intCount = 0;
+
+				if (blUseUppercase) {
+					intCount++;
 				}
 
-				//get the left out next line
-				console.nextLine();
-
-				System.out.println("\nChoose a password type:");
-				System.out.println("1. Default");
-				System.out.println("2. Customized");
-				System.out.print("\nEnter the number of your choice: ");
-				strAnswer = console.nextLine();
-
-				while (!strAnswer.equals("1") && !strAnswer.equals("2")) {
-					System.out.print("Invalid input. Please enter 1 or 2: ");
-					strAnswer = console.nextLine();
+				if (blUseLowercase) {
+					intCount++;
 				}
 
-				if (strAnswer.equals("1")) {
+				if (blUseDigit) {
+					intCount++;
+				}
+
+				if (blUsePunctuation) {
+					intCount++;
+				}
+
+				if (blUseUppercase && blUseLowercase && blUseDigit && blUsePunctuation) {
 					System.out.println("\nYour password is: " + generateStrongPassword());
-				} else {
-					do {
-						System.out.println("\nCustomize your password:");
-						System.out.print("Do you want uppercase letters? (Y/N): ");
-						blUseUppercase = answerChecker();
-						System.out.print("Do you want lowercase letters? (Y/N): ");
-						blUseLowercase = answerChecker();
-						System.out.print("Do you want numbers? (Y/N): ");
-						blUseDigit = answerChecker();
-						System.out.print("Do you want punctuations? (Y/N): ");
-						blUsePunctuation = answerChecker();
-						System.err.print("\n");
-
-						if (!(blUseUppercase || blUseLowercase || blUseDigit || blUsePunctuation)) {
-							System.out.print("Please select at least one option (Y/N): ");
-							console.nextLine();
-						}
-
-					} while (!blUseUppercase && !blUseLowercase && !blUseDigit && !blUsePunctuation);
-
-					//count how many true values
-					int intCount = 0;
-
-					if (blUseUppercase) {
-						intCount++;
-					}
-
-					if (blUseLowercase) {
-						intCount++;
-					}
-
-					if (blUseDigit) {
-						intCount++;
-					}
-
-					if (blUsePunctuation) {
-						intCount++;
-					}
-
-					if (blUseUppercase && blUseLowercase && blUseDigit && blUsePunctuation) {
-						System.out.println("\nYour password is: " + generateStrongPassword());
-					} else if (blUseUppercase && blUseLowercase && blUseDigit) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, true, false));
-					} else if (blUseUppercase && blUseLowercase && blUsePunctuation) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, false, true));
-					} else if (blUseUppercase && blUseDigit && blUsePunctuation) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, true, true));
-					} else if (blUseLowercase && blUseDigit && blUsePunctuation) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, true, true));
-					} else if (blUseUppercase && blUseLowercase) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, false, false));
-					} else if (blUseUppercase && blUseDigit) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, true, false));
-					} else if (blUseUppercase && blUsePunctuation) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, false, true));
-					} else if (blUseLowercase && blUseDigit) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, true, false));
-					} else if (blUseLowercase && blUsePunctuation) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, false, true));
-					} else if (blUseDigit && blUsePunctuation) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, true, true));
-					} else if (blUseUppercase) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, false, false));
-					} else if (blUseLowercase) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, false, false));
-					} else if (blUseDigit) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, true, false));
-					} else if (blUsePunctuation) {
-						System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, false, true));
-					}
-
+					return generateStrongPassword();
+					
+				} else if (blUseUppercase && blUseLowercase && blUseDigit) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, true, false));
+					return generateStrongPassword(intCount, true, true, true, false);
+					
+				} else if (blUseUppercase && blUseLowercase && blUsePunctuation) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, false, true));
+					return generateStrongPassword(intCount, true, true, false, true);
+					
+				} else if (blUseUppercase && blUseDigit && blUsePunctuation) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, true, true));
+					return generateStrongPassword(intCount, true, false, true, true);
+					
+				} else if (blUseLowercase && blUseDigit && blUsePunctuation) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, true, true));
+					return generateStrongPassword(intCount, false, true, true, true);
+					
+				} else if (blUseUppercase && blUseLowercase) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, true, false, false));
+					return generateStrongPassword(intCount, true, true, false, false);
+					
+				} else if (blUseUppercase && blUseDigit) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, true, false));
+					return generateStrongPassword(intCount, true, false, true, false);
+					
+				} else if (blUseUppercase && blUsePunctuation) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, false, true));
+					return generateStrongPassword(intCount, true, false, false, true);
+					
+				} else if (blUseLowercase && blUseDigit) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, true, false));
+					return generateStrongPassword(intCount, false, true, true, false);
+					
+				} else if (blUseLowercase && blUsePunctuation) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, false, true));
+					return generateStrongPassword(intCount, false, true, false, true);
+					
+				} else if (blUseDigit && blUsePunctuation) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, true, true));
+					return generateStrongPassword(intCount, false, false, true, true);
+					
+				} else if (blUseUppercase) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, true, false, false, false));
+					return generateStrongPassword(intCount, true, false, false, false);
+					
+				} else if (blUseLowercase) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, true, false, false));
+					return generateStrongPassword(intCount, false, true, false, false);
+					
+				} else if (blUseDigit) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, true, false));
+					return generateStrongPassword(intCount, false, false, true, false);
+					
+				} else if (blUsePunctuation) {
+					System.out.println("\nYour password is: " + generateStrongPassword(intCount, false, false, false, true));
+					return generateStrongPassword(intCount, false, false, false, true);
+					
 				}
 
-				System.out.print("\nDo you want to generate another password? (Y/N): ");
-				char userChoice;
-
-				while (true) {
-					try {
-						userChoice = Character.toUpperCase(console.next().charAt(0));
-
-						if (userChoice == 'Y') {
-							break;
-						} else if (userChoice == 'N') {
-							break;
-						} else {
-							System.out.println("Invalid input. Please enter 'Y' or 'N'.");
-							System.out.print("Do you want to generate another password? (Y/N): ");
-						}
-					} catch (StringIndexOutOfBoundsException e) {
-						System.out.println("Invalid input. Please enter 'Y' or 'N'.");
-						System.out.print("Do you want to generate another password? (Y/N): ");
-					}
-				}
-
-				continueGenerating = (userChoice == 'Y');
-
-			} catch (InputMismatchException e) {
-				System.out.println("Invalid input. Please enter a valid number.");
-				console.nextLine();
 			}
+
+			// System.out.print("\nDo you want to generate another password? (Y/N): ");
+			// char userChoice;
+
+			// while (true) {
+			// 	try {
+			// 		userChoice = Character.toUpperCase(console.next().charAt(0));
+
+			// 		if (userChoice == 'Y') {
+			// 			break;
+			// 		} else if (userChoice == 'N') {
+			// 			break;
+			// 		} else {
+			// 			System.out.println("Invalid input. Please enter 'Y' or 'N'.");
+			// 			System.out.print("Do you want to generate another password? (Y/N): ");
+			// 		}
+			// 	} catch (StringIndexOutOfBoundsException e) {
+			// 		System.out.println("Invalid input. Please enter 'Y' or 'N'.");
+			// 		System.out.print("Do you want to generate another password? (Y/N): ");
+			// 	}
+			// }
+
+			// continueGenerating = (userChoice == 'Y');
+
+		} catch (InputMismatchException e) {
+			System.out.println("Invalid input. Please enter a valid number.");
+			
 		}
+
+
+		return null;
+
 	}
+	
 
 	public static String generateStrongPassword() {
 

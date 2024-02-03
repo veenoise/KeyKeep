@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.util.Scanner;
 
 import javax.crypto.SecretKey;
+import javax.swing.JOptionPane;
 
 
 public class PasswordManager extends PasswordBasedEncryptionDecryption {
@@ -21,11 +22,11 @@ public class PasswordManager extends PasswordBasedEncryptionDecryption {
 	}
 
 	protected String getMasterPassword() {
-		System.out.print("Enter master password: ");
-		this.strMasterPassword = console.nextLine();
+		// System.out.print("Enter master password: ");
+		this.strMasterPassword = JOptionPane.showInputDialog(null, "Enter Master Password", "KeyKeep", JOptionPane.WARNING_MESSAGE);
 		System.out.print("Confirm master password: ");
-
-		if (this.strMasterPassword.equals(console.nextLine())) {
+		String strTempTest = JOptionPane.showInputDialog(null, "Confirm Master Password", "KeyKeep", JOptionPane.WARNING_MESSAGE);
+		if (this.strMasterPassword.equals(strTempTest)) {
 			return this.strMasterPassword;
 		} else {
 			System.out.print("Passwords do not match. Please try again.\n\n");
@@ -70,118 +71,133 @@ public class PasswordManager extends PasswordBasedEncryptionDecryption {
 		return false;
 	}
 
-	protected void promptOptions() {
-		System.out.println();
-		System.out.println("Options: List accounts [ls], View password [vp platform_name email], Append an account [a platform_name email password], Remove an account [rm platform_name email], Update an account [up platform_name email password], Generate password (Traditional) [gpt], Generate password (passphrase) [gpp], Exit program [x]");
-		System.out.print(": ");
-		String strUserInput = console.nextLine();
-		String[] strArrUserInput = strUserInput.split("\\s");
-		System.out.println();
+	// protected void promptOptions() {
+	// 	System.out.println();
+	// 	System.out.println("Options: List accounts [ls], View password [vp platform_name email], Append an account [a platform_name email password], Remove an account [rm platform_name email], Update an account [up platform_name email password], Generate password (Traditional) [gpt], Generate password (passphrase) [gpp], Exit program [x]");
+	// 	System.out.print(": ");
+	// 	String strUserInput = console.nextLine();
+	// 	String[] strArrUserInput = strUserInput.split("\\s");
+	// 	System.out.println();
 
-		if (strUserInput.equals("ls")) {
-			if (strArrUserInput.length != 1) {
-				System.out.println("Improper use of the program.");
-			} else {
-				this.listAccounts();
-			}
-		} else if (strUserInput.startsWith("vp")) {
-			if (strArrUserInput.length != 3) {
-				System.out.println("Improper use of the program.");
-			} else {
-				try {
-					this.viewPassword(strArrUserInput[1], strArrUserInput[2]);
-				} catch (Exception e) {
-					System.err.println(e + ": Improper use of the program.");
-				}
-			}
+	// 	if (strUserInput.equals("ls")) {
+	// 		if (strArrUserInput.length != 1) {
+	// 			System.out.println("Improper use of the program.");
+	// 		} else {
+	// 			this.listAccounts();
+	// 		}
+	// 	} else if (strUserInput.startsWith("vp")) {
+	// 		if (strArrUserInput.length != 3) {
+	// 			System.out.println("Improper use of the program.");
+	// 		} else {
+	// 			try {
+	// 				this.viewPassword(strArrUserInput[1], strArrUserInput[2]);
+	// 			} catch (Exception e) {
+	// 				System.err.println(e + ": Improper use of the program.");
+	// 			}
+	// 		}
 
-		} else if (strUserInput.startsWith("a")) {
-			if (strArrUserInput.length != 4) {
-				System.out.println("Improper use of the program.");
-			} else {
-				try {
-					this.appendAccount(strArrUserInput[1], strArrUserInput[2], strArrUserInput[3]);
-				} catch (Exception e) {
-					System.err.println(e + ": Improper use of the program.");
-				}
-			}
-		} else if (strUserInput.startsWith("rm")) {
-			if (strArrUserInput.length != 3) {
-				System.out.println("Improper use of the program.");
-			} else {
-				try {
-					this.updateAccount(strArrUserInput[1], strArrUserInput[2]);
-				} catch (Exception e) {
-					System.err.println(e + ": Improper use of the program.");
-				}
-			}
-		} else if (strUserInput.startsWith("up")) {
-			if (strArrUserInput.length != 4) {
-				System.out.println("Improper use of the program.");
-			} else {
-				try {
-					this.updateAccount(strArrUserInput[1], strArrUserInput[2], strArrUserInput[3]);
-				} catch (Exception e) {
-					System.err.println(e + ": Improper use of the program.");
-				}
-			}
-		} else if (strUserInput.equals("gpt")) {
-			if (strArrUserInput.length != 1) {
-				System.out.println("Improper use of the program.");
-			} else {
-				try {
-					TraditionalPasswordGenerator tPasswordGenerator = new TraditionalPasswordGenerator();
-					tPasswordGenerator.mainGeneratePassword();
-				} catch (Exception e) {
-					System.err.println(e + ": Improper use of the program.");
-				}
-			}
-		} else if (strUserInput.equals("gpp")) {
-			if (strArrUserInput.length != 1) {
-				System.out.println("Improper use of the program.");
-			} else {
-				try {
-					PassphraseGeneratorV2 pGeneratorV2 = new PassphraseGeneratorV2();
-					pGeneratorV2.mainGeneratePassword();
-				} catch (Exception e) {
-					System.err.println(e + ": Improper use of the program.");
-				}
-			}
-		} else if (strUserInput.startsWith("x")) {
-			if (strArrUserInput.length != 1) {
-				System.out.println("Improper use of the program.");
-			} else {
-				try {
-					this.exitProgram();
-				} catch (Exception e) {
-					System.err.println(e + ": Improper use of the program.");
-				}
-			}
-		} else {
-			System.err.println("Improper use of the program.");
-		}
-	}
+	// 	} else if (strUserInput.startsWith("a")) {
+	// 		if (strArrUserInput.length != 4) {
+	// 			System.out.println("Improper use of the program.");
+	// 		} else {
+	// 			try {
+	// 				this.appendAccount(strArrUserInput[1], strArrUserInput[2], strArrUserInput[3]);
+	// 			} catch (Exception e) {
+	// 				System.err.println(e + ": Improper use of the program.");
+	// 			}
+	// 		}
+	// 	} else if (strUserInput.startsWith("rm")) {
+	// 		if (strArrUserInput.length != 3) {
+	// 			System.out.println("Improper use of the program.");
+	// 		} else {
+	// 			try {
+	// 				this.updateAccount(strArrUserInput[1], strArrUserInput[2]);
+	// 			} catch (Exception e) {
+	// 				System.err.println(e + ": Improper use of the program.");
+	// 			}
+	// 		}
+	// 	} else if (strUserInput.startsWith("up")) {
+	// 		if (strArrUserInput.length != 4) {
+	// 			System.out.println("Improper use of the program.");
+	// 		} else {
+	// 			try {
+	// 				this.updateAccount(strArrUserInput[1], strArrUserInput[2], strArrUserInput[3]);
+	// 			} catch (Exception e) {
+	// 				System.err.println(e + ": Improper use of the program.");
+	// 			}
+	// 		}
+	// 	} else if (strUserInput.equals("gpt")) {
+	// 		if (strArrUserInput.length != 1) {
+	// 			System.out.println("Improper use of the program.");
+	// 		} else {
+	// 			try {
+	// 				TraditionalPasswordGenerator tPasswordGenerator = new TraditionalPasswordGenerator();
+	// 				tPasswordGenerator.mainGeneratePassword();
+	// 			} catch (Exception e) {
+	// 				System.err.println(e + ": Improper use of the program.");
+	// 			}
+	// 		}
+	// 	} else if (strUserInput.equals("gpp")) {
+	// 		if (strArrUserInput.length != 1) {
+	// 			System.out.println("Improper use of the program.");
+	// 		} else {
+	// 			try {
+	// 				PassphraseGeneratorV2 pGeneratorV2 = new PassphraseGeneratorV2();
+	// 				pGeneratorV2.mainGeneratePassword();
+	// 			} catch (Exception e) {
+	// 				System.err.println(e + ": Improper use of the program.");
+	// 			}
+	// 		}
+	// 	} else if (strUserInput.startsWith("x")) {
+	// 		if (strArrUserInput.length != 1) {
+	// 			System.out.println("Improper use of the program.");
+	// 		} else {
+	// 			try {
+	// 				this.exitProgram();
+	// 			} catch (Exception e) {
+	// 				System.err.println(e + ": Improper use of the program.");
+	// 			}
+	// 		}
+	// 	} else {
+	// 		System.err.println("Improper use of the program.");
+	// 	}
+	// }
 
-	protected void listAccounts() {
+	protected String listAccounts() {
 		try {
 			FileReader fReader = new FileReader(this.strPathToCredentials);
 			Scanner fScanner = new Scanner(fReader);
 
+			String strOutput = "";
 			while (fScanner.hasNextLine()) {
 				String strBuffer = fScanner.nextLine();
 
-				if (strBuffer.startsWith("Password: ")) {
-					continue;
+				// if (strBuffer.startsWith("Password: ")) {
+				// 	continue;
+				// }
+
+				// System.out.println(strBuffer);
+				
+				if (strOutput.equals("")) {
+					strOutput = strBuffer;
+				}
+				
+				else {
+					strOutput += "\n" + strBuffer;
 				}
 
-				System.out.println(strBuffer);
+				
 			}
-
+			
 			fReader.close();
 			fScanner.close();
+			
+			return strOutput;
 		} catch (Exception e) {
 			System.err.println(e + ": There was an error in the listAccounts method.");
 		}
+		
+		return null;
 	}
 
 	protected void viewPassword(String strPlatform, String strAccountName) {
