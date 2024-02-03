@@ -214,7 +214,9 @@ public class KeyKeepGui {
             System.exit(0);
         });
         
-        panelScroll.setLayout(new BoxLayout(panelScroll, BoxLayout.Y_AXIS));
+        // panelScroll.setLayout(new BoxLayout(panelScroll, BoxLayout.Y_AXIS));
+        panelScroll.setLayout(new FlowLayout(FlowLayout.LEADING));
+        panelScroll.setPreferredSize(new Dimension(300, Integer.MAX_VALUE));
         panelScroll.setBackground(new Color(0xFAF9F6));
 
 
@@ -254,6 +256,7 @@ public class KeyKeepGui {
                 if (strAcc.startsWith("Platform: ")) {
                     strPlatformTemp = strAcc.substring(10);
                     JLabel lblTmp = new JLabel(strPlatformTemp);
+                    lblTmp.setPreferredSize(new Dimension(300, 25));
                     lblTmp.setForeground(new Color(0x011525));
                     panelScroll.add(Box.createHorizontalStrut(30));
                     panelScroll.add(Box.createVerticalStrut(10));
@@ -268,6 +271,7 @@ public class KeyKeepGui {
 
                 else if (strAcc.startsWith("Password: ")) {
                     JButton btnAcc = new JButton(strEmailTmp);
+                    btnAcc.setPreferredSize(new Dimension(300, 30));
                     String strInput = strPlatformTemp + "\n" + strEmailTmp + "\n" + strAcc.substring(10);
                     btnAcc.addActionListener(e -> {
                         String[] strArr = strInput.split("\\n");
